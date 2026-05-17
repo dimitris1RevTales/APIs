@@ -4,10 +4,7 @@ info:
   version: v1
   description: Pull-based API for PMS partners to fetch and acknowledge reservation sync events.
 servers:
-  - url: https://{host}/api/v1
-    variables:
-      host:
-        default: YOUR_PMS_API_HOST
+  - url: https://travelagents-pms-integration-670805103288.europe-west1.run.app/api/v1
 security:
   - bearerAuth: []
 paths:

@@ -45,6 +45,11 @@ body {
   font-size: 14px;
 }
 
+.top-links {
+  display: flex;
+  gap: 14px;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -111,6 +116,37 @@ pre {
   background: var(--code-bg);
   color: var(--code-ink);
   overflow: auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tab {
+  border: 1px solid #c5d2e5;
+  background: #f3f8ff;
+  color: #2a4668;
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  text-transform: lowercase;
+}
+
+.tab.active {
+  background: #0d6e66;
+  border-color: #0d6e66;
+  color: #ffffff;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.active {
+  display: block;
 }
 
 code {

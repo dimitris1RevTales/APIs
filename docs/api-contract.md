@@ -7,6 +7,7 @@ Scope: HTTP Cloud Function (`pms_sync_api`) for PMS pull sync.
 ## Base
 
 - Base path: `/api/v1`
+- Host: `https://travelagents-pms-integration-670805103288.europe-west1.run.app`
 - Auth header: `Authorization: Bearer <API_KEY>`
 - Content type: `application/json`
 
