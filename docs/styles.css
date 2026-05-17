@@ -1,0 +1,135 @@
+:root {
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --ink: #162238;
+  --muted: #5d6b82;
+  --line: #dbe2ec;
+  --accent: #0d6e66;
+  --accent-soft: #e5f6f4;
+  --code-bg: #0e1726;
+  --code-ink: #dce7ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  background: radial-gradient(circle at 0 0, #edf4ff, var(--bg) 40%);
+  color: var(--ink);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: linear-gradient(90deg, #0f2538, #1c3047);
+  color: #eef4ff;
+  border-bottom: 1px solid #22354f;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.contract-link {
+  color: #c7f3ef;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 56px);
+}
+
+.sidebar {
+  border-right: 1px solid var(--line);
+  background: #f9fbfe;
+  padding: 24px 16px;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow: auto;
+}
+
+.sidebar a {
+  display: block;
+  color: #28415f;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.sidebar a:hover {
+  background: #e8f0fb;
+}
+
+.content {
+  padding: 28px;
+  max-width: 980px;
+}
+
+section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+  color: #11243b;
+}
+
+p, li {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.callout {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+
+pre {
+  margin: 10px 0 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  overflow: auto;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (max-width: 920px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .content {
+    padding: 16px;
+  }
+}

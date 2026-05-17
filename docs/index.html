@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RevenueTales PMS Integration API</title>
+  <meta name="description" content="RevenueTales PMS Integration API documentation for partners.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">RevenueTales API Docs</div>
+    <a class="contract-link" href="api-contract.md">Raw Contract (Markdown)</a>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar">
+      <a href="#start">Start</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#auth">Authentication</a>
+      <a href="#workflow">Sync Workflow</a>
+      <a href="#pending">Pending Reservations</a>
+      <a href="#details">Reservation Details</a>
+      <a href="#sync">Sync Confirmation</a>
+      <a href="#errors">Errors</a>
+      <a href="#models">Data Models</a>
+      <a href="#go-live">Go Live Checklist</a>
+    </nav>
+
+    <main class="content">
+      <section id="start">
+        <h1>PMS Integration API (v1)</h1>
+        <p>
+          This API allows PMS partners to pull reservations from RevenueTales and confirm successful import.
+          Integration is pull-based and designed for polling every 5 minutes.
+        </p>
+        <div class="callout">
+          <strong>Base URL</strong>
+          <p><code>https://&lt;YOUR_PMS_API_HOST&gt;/api/v1</code></p>
+          <p>Replace <code>&lt;YOUR_PMS_API_HOST&gt;</code> with the deployed Cloud Function host.</p>
+        </div>
+      </section>
+
+      <section id="quickstart">
+        <h2>Quickstart</h2>
+        <ol>
+          <li>Get your API key from RevenueTales onboarding team.</li>
+          <li>Poll pending reservations.</li>
+          <li>Fetch reservation details for each booking.</li>
+          <li>Import booking into PMS.</li>
+          <li>Confirm sync with <code>/reservations/{booking_id}/sync</code>.</li>
+        </ol>
+        <pre><code>curl -X GET "https://&lt;YOUR_PMS_API_HOST&gt;/api/v1/reservations/pending?hotel_id=9b767697-4f60-4b78-b387-b6f69ccdb7bc" \
+  -H "Authorization: Bearer &lt;API_KEY&gt;"</code></pre>
+      </section>
+
+      <section id="auth">
+        <h2>Authentication and Authorization</h2>
+        <ul>
+          <li>Use header: <code>Authorization: Bearer &lt;API_KEY&gt;</code>.</li>
+          <li>API key must be active.</li>
+          <li>Each key is scoped to one hotel and one PMS partner.</li>
+          <li>All requests are validated against key <code>hotel_id</code> scope.</li>
+        </ul>
+      </section>
+
+      <section id="workflow">
+        <h2>Sync Workflow</h2>
+        <pre><code>1) GET /reservations/pending
+2) For each event: GET /reservations/{booking_id}
+3) Import into PMS
+4) POST /reservations/{booking_id}/sync</code></pre>
+        <p>
+          The sync confirmation endpoint is idempotent. If you retry confirmation for the same event,
+          the API safely returns success without duplicate processing.
+        </p>
+      </section>
+
+      <section id="pending">
+        <h2>Endpoint: List Pending Reservations</h2>
+        <p><code>GET /api/v1/reservations/pending?hotel_id={hotel_id}&amp;limit=100&amp;page_token=...</code></p>
+        <h3>Response</h3>
+        <pre><code>{
+  "api_version": "v1",
+  "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+  "next_page_token": "...",
+  "reservations": [
+    {
+      "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+      "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+      "sync_type": "NEW",
+      "updated_at": "2026-05-17T10:30:42Z"
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="details">
+        <h2>Endpoint: Reservation Details</h2>
+        <p><code>GET /api/v1/reservations/{booking_id}?hotel_id={hotel_id}</code></p>
+        <h3>Response</h3>
+        <pre><code>{
+  "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+  "external_booking_id": "AGENCY-9988",
+  "hotel_name": "ABC",
+  "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+  "room_name": "Double Room",
+  "room_id": "DBL",
+  "board_name": "Bed &amp; Breakfast",
+  "board_id": 3,
+  "rate": 500,
+  "currency": "EUR",
+  "guest_name": "John Smith",
+  "number_of_pax": 3,
+  "number_of_adults": 2,
+  "number_of_kids": 1,
+  "number_of_infants": 0,
+  "booking_date": "2026-05-16T10:00:00Z",
+  "check_in_date": "2026-06-01",
+  "check_out_date": "2026-06-05",
+  "source": "Travel Agency ABC",
+  "status": "CONFIRMED",
+  "special_requests": "Late arrival",
+  "cancellation_reason": null,
+  "updated_at": "2026-05-16T10:00:00Z"
+}</code></pre>
+      </section>
+
+      <section id="sync">
+        <h2>Endpoint: Confirm Reservation Sync</h2>
+        <p><code>POST /api/v1/reservations/{booking_id}/sync</code></p>
+        <h3>Request</h3>
+        <pre><code>{
+  "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+  "status": "success",
+  "pms_reference": "THEOVA-55521"
+}</code></pre>
+        <h3>Response</h3>
+        <pre><code>{
+  "api_version": "v1",
+  "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+  "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+  "sync_status": "ACKNOWLEDGED",
+  "synced_at": "2026-05-17T10:35:11Z",
+  "idempotent": true
+}</code></pre>
+      </section>
+
+      <section id="errors">
+        <h2>Error Handling</h2>
+        <p>All errors follow one structure:</p>
+        <pre><code>{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Missing or invalid API key",
+    "request_id": "req_..."
+  }
+}</code></pre>
+        <ul>
+          <li><code>401</code>: missing, invalid, or inactive API key</li>
+          <li><code>403</code>: hotel is outside key scope</li>
+          <li><code>404</code>: reservation/event not found</li>
+          <li><code>409</code>: invalid state transition</li>
+          <li><code>422</code>: request validation error</li>
+          <li><code>500</code>: internal server error</li>
+        </ul>
+      </section>
+
+      <section id="models">
+        <h2>Data Models</h2>
+        <ul>
+          <li><strong>sync_type</strong>: <code>NEW</code>, <code>MOD</code>, <code>CL</code></li>
+          <li><strong>sync_status</strong>: <code>PENDING</code>, <code>ACKNOWLEDGED</code>, <code>FAILED</code>, <code>BLOCKED</code></li>
+          <li><strong>board_id</strong>: derived from normalized board type map</li>
+        </ul>
+      </section>
+
+      <section id="go-live">
+        <h2>Go Live Checklist</h2>
+        <ul>
+          <li>Validate API key and hotel scope in sandbox.</li>
+          <li>Run full flow: pending -> details -> sync.</li>
+          <li>Test retry behavior for sync confirmation.</li>
+          <li>Enable monitoring for failed API calls and high latency.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

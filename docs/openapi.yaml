@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: RevenueTales PMS Integration API
+  version: v1
+  description: Pull-based API for PMS partners to fetch and acknowledge reservation sync events.
+servers:
+  - url: https://{host}/api/v1
+    variables:
+      host:
+        default: YOUR_PMS_API_HOST
+security:
+  - bearerAuth: []
+paths:
+  /reservations/pending:
+    get:
+      summary: List pending reservations
+      parameters:
+        - name: hotel_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+        - name: page_token
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pending reservations list
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+  /reservations/{booking_id}:
+    get:
+      summary: Get reservation details
+      parameters:
+        - name: booking_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: hotel_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reservation payload
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+  /reservations/{booking_id}/sync:
+    post:
+      summary: Confirm reservation sync
+      parameters:
+        - name: booking_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [event_id, status]
+              properties:
+                event_id:
+                  type: string
+                status:
+                  type: string
+                  enum: [success]
+                pms_reference:
+                  type: string
+      responses:
+        '200':
+          description: Sync acknowledged
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '422':
+          description: Validation error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API_KEY
