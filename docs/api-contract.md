@@ -55,6 +55,62 @@ Scope: HTTP Cloud Function (`pms_sync_api`) for PMS pull sync.
 - Sort by `created_at ASC`.
 - Use cursor pagination based on `created_at` + `event_id`.
 
+## Endpoint 1b: List Pending Reservations (Full Payload)
+
+- Method: `GET`
+- Path: `/api/v1/reservations/pending/full`
+- Query params:
+  - `hotel_id` (required, string)
+  - `limit` (optional, int, default `50`, max `200`)
+  - `page_token` (optional, string)
+
+### Success Response (200)
+
+```json
+{
+  "api_version": "v1",
+  "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+  "next_page_token": "eyJkb2NfaWQiOiIuLi4ifQ==",
+  "meta": {
+    "missing_reservations": 0,
+    "returned_count": 1
+  },
+  "items": [
+    {
+      "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+      "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+      "sync_type": "NEW",
+      "event_created_at": "2026-05-17T10:30:42Z",
+      "reservation": {
+        "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+        "external_booking_id": "AGENCY-9988",
+        "hotel_name": "ABC",
+        "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+        "room_name": "Double Room",
+        "room_id": "DBL",
+        "board_name": "Bed & Breakfast",
+        "board_id": 3,
+        "rate": "500",
+        "currency": "EUR",
+        "guest_name": "John Smith",
+        "number_of_pax": 3,
+        "number_of_adults": 2,
+        "number_of_kids": 1,
+        "number_of_infants": 0,
+        "booking_date": "2026-05-16T10:00:00Z",
+        "check_in_date": "2026-06-01",
+        "check_out_date": "2026-06-05",
+        "source": "Travel Agency ABC",
+        "status": "CONFIRMED",
+        "special_requests": "",
+        "cancellation_reason": null,
+        "updated_at": "2026-05-16T10:00:00Z"
+      }
+    }
+  ]
+}
+```
+
 ## Endpoint 2: Get Reservation Details
 
 - Method: `GET`

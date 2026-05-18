@@ -23,6 +23,7 @@
       <a href="#auth">Authentication</a>
       <a href="#workflow">Sync Workflow</a>
       <a href="#pending">Pending Reservations</a>
+      <a href="#pending-full">Pending Full Payload</a>
       <a href="#details">Reservation Details</a>
       <a href="#sync">Sync Confirmation</a>
       <a href="#errors">Errors</a>
@@ -32,7 +33,7 @@
 
     <main class="content">
       <section id="start">
-        <h1>PMS Integration API (v1)</h1>
+        <h1>PMS Integration API</h1>
         <p>This API allows PMS partners to pull reservations from RevenueTales and confirm successful import.</p>
         <div class="callout">
           <strong>Base URL</strong>
@@ -104,6 +105,100 @@ const response = await fetch(url, {
 console.log(response.status);
 console.log(await response.json());</code></pre>
         </div>
+        <h3>Expected JSON Response</h3>
+        <pre><code>{
+  "api_version": "v1",
+  "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+  "next_page_token": "...",
+  "reservations": [
+    {
+      "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+      "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+      "sync_type": "NEW",
+      "updated_at": "2026-05-17T10:30:42Z"
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="pending-full">
+        <h2>Endpoint: List Pending Reservations (Full Payload)</h2>
+        <p><code>GET /api/v1/reservations/pending/full?hotel_id={hotel_id}&amp;limit=50</code></p>
+
+        <div class="tabs" data-tabs>
+          <button class="tab active" data-tab="curl">curl</button>
+          <button class="tab" data-tab="python">python</button>
+          <button class="tab" data-tab="node">node.js</button>
+        </div>
+        <div class="tab-panels">
+          <pre class="panel active" data-panel="curl"><code>curl -X GET "https://travelagents-pms-integration-670805103288.europe-west1.run.app/api/v1/reservations/pending/full?hotel_id=9b767697-4f60-4b78-b387-b6f69ccdb7bc&limit=50" \
+  -H "Authorization: Bearer &lt;API_KEY&gt;"</code></pre>
+          <pre class="panel" data-panel="python"><code>import requests
+
+url = "https://travelagents-pms-integration-670805103288.europe-west1.run.app/api/v1/reservations/pending/full"
+headers = {"Authorization": "Bearer <API_KEY>"}
+params = {
+    "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+    "limit": 50,
+}
+
+response = requests.get(url, headers=headers, params=params, timeout=30)
+print(response.status_code)
+print(response.json())</code></pre>
+          <pre class="panel" data-panel="node"><code>const url = new URL("https://travelagents-pms-integration-670805103288.europe-west1.run.app/api/v1/reservations/pending/full");
+url.searchParams.set("hotel_id", "9b767697-4f60-4b78-b387-b6f69ccdb7bc");
+url.searchParams.set("limit", "50");
+
+const response = await fetch(url, {
+  headers: { Authorization: "Bearer <API_KEY>" }
+});
+
+console.log(response.status);
+console.log(await response.json());</code></pre>
+        </div>
+        <h3>Expected JSON Response</h3>
+        <pre><code>{
+  "api_version": "v1",
+  "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+  "next_page_token": "...",
+  "meta": {
+    "missing_reservations": 0,
+    "returned_count": 1
+  },
+  "items": [
+    {
+      "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+      "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+      "sync_type": "NEW",
+      "event_created_at": "2026-05-17T10:30:42Z",
+      "reservation": {
+        "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+        "external_booking_id": "AGENCY-9988",
+        "hotel_name": "ABC",
+        "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+        "room_name": "Double Room",
+        "room_id": "DBL",
+        "board_name": "Bed & Breakfast",
+        "board_id": 3,
+        "rate": "500",
+        "currency": "EUR",
+        "guest_name": "John Smith",
+        "number_of_pax": 3,
+        "number_of_adults": 2,
+        "number_of_kids": 1,
+        "number_of_infants": 0,
+        "booking_date": "2026-05-16T10:00:00Z",
+        "check_in_date": "2026-06-01",
+        "check_out_date": "2026-06-05",
+        "source": "Travel Agency ABC",
+        "status": "CONFIRMED",
+        "special_requests": "",
+        "cancellation_reason": null,
+        "updated_at": "2026-05-16T10:00:00Z"
+      }
+    }
+  ]
+}</code></pre>
       </section>
 
       <section id="details">
@@ -139,6 +234,32 @@ const response = await fetch(url, {
 console.log(response.status);
 console.log(await response.json());</code></pre>
         </div>
+        <h3>Expected JSON Response</h3>
+        <pre><code>{
+  "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+  "external_booking_id": "AGENCY-9988",
+  "hotel_name": "ABC",
+  "hotel_id": "9b767697-4f60-4b78-b387-b6f69ccdb7bc",
+  "room_name": "Double Room",
+  "room_id": "DBL",
+  "board_name": "Bed & Breakfast",
+  "board_id": 3,
+  "rate": "500",
+  "currency": "EUR",
+  "guest_name": "John Smith",
+  "number_of_pax": 3,
+  "number_of_adults": 2,
+  "number_of_kids": 1,
+  "number_of_infants": 0,
+  "booking_date": "2026-05-16T10:00:00Z",
+  "check_in_date": "2026-06-01",
+  "check_out_date": "2026-06-05",
+  "source": "Travel Agency ABC",
+  "status": "CONFIRMED",
+  "special_requests": "",
+  "cancellation_reason": null,
+  "updated_at": "2026-05-16T10:00:00Z"
+}</code></pre>
       </section>
 
       <section id="sync">
@@ -196,6 +317,15 @@ const response = await fetch(
 console.log(response.status);
 console.log(await response.json());</code></pre>
         </div>
+        <h3>Expected JSON Response</h3>
+        <pre><code>{
+  "api_version": "v1",
+  "booking_id": "d2f0ee30-f7aa-4d39-9df9-f181ec4cf5f9",
+  "event_id": "e4e4b3bc-4d2a-4b41-b8b8-69f4f5f51309",
+  "sync_status": "ACKNOWLEDGED",
+  "synced_at": "2026-05-17T10:35:11Z",
+  "idempotent": false
+}</code></pre>
       </section>
 
       <section id="errors">
